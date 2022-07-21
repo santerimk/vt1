@@ -290,6 +290,32 @@ function tarkistaSarja(sarja) {
 }
 
 /**
+ * Etsii maalirastin
+ * @return {Object} rasti
+ */
+function etsiMaali() {
+    for (let rasti of data.rastit) {
+        if (rasti.koodi == "MAALI") {
+            var maali = rasti.id;
+        }
+    }
+    return maali;
+}
+
+/**
+ * Etsii lähtörastin
+ * @return {Object} rasti
+ */
+ function etsiLahto() {
+    for (let rasti of data.rastit) {
+        if (rasti.koodi == "LAHTO") {
+            var lahto = rasti.id;
+        }
+    }
+    return lahto;
+}
+
+/**
   * Taso 3
   * Laskee joukkueen käyttämän ajan. Tulos tallennetaan joukkue.aika-ominaisuuteen.
   * Matka lasketaan viimeisestä LAHTO-rastilla tehdystä leimauksesta alkaen aina
@@ -299,6 +325,17 @@ function tarkistaSarja(sarja) {
   * @return {Object} joukkue
   */
 function laskeAika(joukkue) {
+    let lahto = etsiLahto();
+    let maali = etsiMaali();
+    for (let rastileimaus of rastileimaukset) {
+        if (rastileimaus.rasti.id == lahto) {
+            var aloitusAika = rastileimaus.aika;
+        }
+        if (rastileimaus.rasti.id == maali) {
+            var lopetusAika = rastileimaus.aika;
+        }
+    }
+    joukkue.aika = lopetusAika.getTime() - aloitusAika.getTime();
     return joukkue;
 }
 
@@ -332,7 +369,20 @@ function laskeAika(joukkue) {
   * @return {Array} palauttaa järjestetyn ja täydennetyn _kopion_ data.joukkueet-taulukosta
   */
 function jarjestaJoukkueet(data, mainsort="nimi", sortorder=[] ) {
-    return data.joukkueet;
+    function compare(a, b) {
+        let eka = a[mainsort].toUpperCase().trim();
+        let toka = b[mainsort].toUpperCase().trim();
+        if (eka < toka) {
+            return -1;
+        }
+        if (eka > toka) {
+            return 1;
+        }
+        return 0;
+    }
+    let joukkueet = data.joukkueet.slice();
+    joukkueet.sort(compare);
+    return joukkueet;
 }
 
 /**

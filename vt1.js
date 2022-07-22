@@ -161,9 +161,8 @@ function jarjestaRastit(data) {
     }
     kirjainTaulukko.sort(compare);
     numeroTaulukko.sort(compare);
-    kirjainTaulukko.push(numeroTaulukko);
-    console.log(kirjainTaulukko);
-    return kirjainTaulukko;
+    let lopullinenTaulukko = kirjainTaulukko.concat(numeroTaulukko);
+    return lopullinenTaulukko;
 }
 
 /**
@@ -213,17 +212,30 @@ function lisaaJoukkue(data, nimi, leimaustavat, sarja, jasenet) {
         }
     }
 
+    let loydetytLeimaukset = [];
+    for (let i = 0; i < data.leimaustavat.length; i++) {
+        for (let leimaus of leimaustavat) {
+            if (leimaus == data.leimaustavat[i]) {
+                let loydettyLeimaus = i;
+                loydetytLeimaukset.push(loydettyLeimaus);
+            }
+        }
+    }
+
+    // Alustetaan uusi joukkue
     let laskuri = 0;
     for (let joukkue of data.joukkueet) {
         if (joukkue.nimi.toUpperCase().trim() == nimi.toUpperCase().trim()) {
             laskuri++;
         }
     }
+
+    // Alustetaan uusi joukkue
     let uusiJoukkue = {
         id: suurinId+1,
         nimi: nimi,
-        jasenet: jasenet,
-        leimaustapa: leimaustavat,
+        jasenet: jasenet.filter((jasen) => jasen),
+        leimaustapa: loydetytLeimaukset,
         rastileimaukset: [],
         sarja: loydettySarja,
         pisteet: 0,
@@ -231,7 +243,28 @@ function lisaaJoukkue(data, nimi, leimaustavat, sarja, jasenet) {
         aika: "00:00:00",
     };
 
-    if (laskuri == 0 && leimaustavat != [] && tarkistaLeimaukset(leimaustavat) == true && jasenet.length > 1 && tarkistaJasenet(jasenet) == true && tarkistaSarja(sarja) == true) {
+    // Tarkistetaan leimaustavat
+    let laskuri2 = 0;
+    let leimausOikein = false;
+    for (let i = 0; i < leimaustavat.length; i++) {
+        if (data.leimaustavat.includes(leimaustavat[i]) == true) {
+            laskuri2++;
+        }
+    }
+
+    if (laskuri2 == leimaustavat.length) {
+        leimausOikein = true;
+    }
+
+    // Tarkistetaan sarja
+    let sarjaOikein = false;
+    for (let sarjaObjekti of data.sarjat) {
+        if (sarjaObjekti.id == sarja) {
+            sarjaOikein = true;
+        }
+    }
+
+    if (laskuri == 0 && loydetytLeimaukset.length != 0 && leimausOikein == true && jasenet.length > 1 && tarkistaJasenet(jasenet) == true && sarjaOikein == true) {
         data.joukkueet.push(uusiJoukkue);
         console.log("Joukkueen lisääminen onnistui");
         console.log(data);
@@ -240,25 +273,6 @@ function lisaaJoukkue(data, nimi, leimaustavat, sarja, jasenet) {
     console.log("Joukkueen lisääminen epäonnistui");
     console.log(data);
     return data;
-}
-
-/**
- * Tarkistaa joukkueelle syötettyjen leimaustapojen valideetin
- * @param {Array} leimaukset - Tarkasteltavat leimaukset
- * @returns {boolean} jos leimaukset ovat valideja true, jos ei niin false
- */
-function tarkistaLeimaukset(leimaukset) {
-    let laskuri = 0;
-    for (let i = 0; i < leimaukset.length; i++) {
-        if (data.leimaustavat.includes(leimaukset[i]) == true) {
-            laskuri++;
-        }
-    }
-
-    if (laskuri == leimaukset.length) {
-        return true;
-    }
-    return false;
 }
 
 /**
@@ -276,46 +290,6 @@ function tarkistaJasenet(jasenet) {
 }
 
 /**
- * Tarkistaa löytyykö joukkueelle syötetty sarjan id data.sarjat taulukosta
- * @param {*} sarja - sarja id
- * @returns {boolean} true jos sarja id löytyy taulukosta, false jos ei
- */
-function tarkistaSarja(sarja) {
-    for (let sarjaObjekti of data.sarjat) {
-        if (sarjaObjekti.id == sarja) {
-            return true;
-        }
-        return false;
-    }
-}
-
-/**
- * Etsii maalirastin
- * @return {Object} rasti
- */
-function etsiMaali() {
-    for (let rasti of data.rastit) {
-        if (rasti.koodi == "MAALI") {
-            var maali = rasti.id;
-        }
-    }
-    return maali;
-}
-
-/**
- * Etsii lähtörastin
- * @return {Object} rasti
- */
- function etsiLahto() {
-    for (let rasti of data.rastit) {
-        if (rasti.koodi == "LAHTO") {
-            var lahto = rasti.id;
-        }
-    }
-    return lahto;
-}
-
-/**
   * Taso 3
   * Laskee joukkueen käyttämän ajan. Tulos tallennetaan joukkue.aika-ominaisuuteen.
   * Matka lasketaan viimeisestä LAHTO-rastilla tehdystä leimauksesta alkaen aina
@@ -325,17 +299,6 @@ function etsiMaali() {
   * @return {Object} joukkue
   */
 function laskeAika(joukkue) {
-    let lahto = etsiLahto();
-    let maali = etsiMaali();
-    for (let rastileimaus of rastileimaukset) {
-        if (rastileimaus.rasti.id == lahto) {
-            var aloitusAika = rastileimaus.aika;
-        }
-        if (rastileimaus.rasti.id == maali) {
-            var lopetusAika = rastileimaus.aika;
-        }
-    }
-    joukkue.aika = lopetusAika.getTime() - aloitusAika.getTime();
     return joukkue;
 }
 
@@ -370,8 +333,42 @@ function laskeAika(joukkue) {
   */
 function jarjestaJoukkueet(data, mainsort="nimi", sortorder=[] ) {
     function compare(a, b) {
-        let eka = a[mainsort].toUpperCase().trim();
-        let toka = b[mainsort].toUpperCase().trim();
+        if (mainsort == "nimi" | mainsort == "aika") {
+            let eka = a[mainsort].toUpperCase();
+            let toka = b[mainsort].toUpperCase();
+            if (eka < toka) {
+                return -1;
+            }
+            if (eka > toka) {
+                return 1;
+            }
+            return 0;
+        } else if (mainsort == "sarja") {
+            let eka = a[mainsort].nimi.toUpperCase();
+            let toka = b[mainsort].nimi.toUpperCase();
+            if (eka < toka) {
+                return -1;
+            }
+            if (eka > toka) {
+                return 1;
+            }
+            return 0;
+        } else {
+            let eka = a[mainsort];
+            let toka = b[mainsort];
+            if (eka < toka) {
+                return -1;
+            }
+            if (eka > toka) {
+                return 1;
+            }
+            return 0;
+        }
+    }
+
+    function compare2(a, b) {
+        let eka = a.toUpperCase().split(" ")[1];
+        let toka = b.toUpperCase().split(" ")[1];
         if (eka < toka) {
             return -1;
         }
@@ -380,8 +377,13 @@ function jarjestaJoukkueet(data, mainsort="nimi", sortorder=[] ) {
         }
         return 0;
     }
+
     let joukkueet = data.joukkueet.slice();
     joukkueet.sort(compare);
+    for (let i = 0; i < joukkueet.length; i++) {
+        joukkueet[i].jasenet.sort(compare2);
+    }
+    console.log(data);
     return joukkueet;
 }
 

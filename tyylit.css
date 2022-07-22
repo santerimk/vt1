@@ -1,0 +1,129 @@
+.red {
+    vertical-align: top;
+    text-align: left;
+    color: red;
+}
+
+#vt1 > div > div > div:nth-child(1) span:nth-of-type(2) {
+    float: right;
+}
+
+#vt1 > div > div > div:nth-child(1) span:nth-of-type(3) {
+    float: right;
+}
+
+#vt1 > div > div > div:nth-child(1) tr > td:nth-child(4) > ul {
+    padding-left: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    vertical-align: top;
+    text-align: left;
+    list-style-type: none;
+}
+
+#vt1 > div > div > div:nth-child(1) tr > td:nth-child(4) > ul > li {
+    display: inline-block;
+    margin-right: 2px;
+}
+
+#vt1 > div > div > div:nth-child(1) {
+    float: left;
+    width: auto;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1em;
+    margin: 0.5em;
+}
+
+th {
+    vertical-align: top;
+    text-align: left;
+    border-style: dotted;
+    border-width: 1px;
+}
+
+td {
+    vertical-align: top;
+    text-align: left;
+    border-style: dotted;
+    border-width: 1px;
+}
+
+#vt1 > div > div > div:nth-child(2) {
+    float: left;
+    width: 20%;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1em;
+    margin: 0.5em;
+}
+
+#vt1 > div > div > div:nth-child(2) fieldset {
+    display: block;
+    overflow: hidden;
+}
+
+#vt1 > div > div > div:nth-child(2) > ul > li > span:nth-of-type(1) {
+    float: right;
+    clear: right;
+}
+
+#vt1 > div > div > div:nth-child(2) > ul > li > span:nth-of-type(2) {
+    float: right;
+    clear: left;
+}
+
+#vt1 > div > div > div:nth-child(2) fieldset > label {
+    display: flex;
+    justify-content: space-between;
+}
+
+#vt1 > div > div > div:nth-child(2) > form:nth-child(2) > fieldset > fieldset:nth-of-type(1) {
+    margin-top: 5px;
+    width: 40%;
+    float: right;
+}
+
+#vt1 > div > div > div:nth-child(2) > form:nth-child(2) > fieldset > fieldset:nth-of-type(2) {
+    margin-top: 5px;
+    width: 40%;
+    float: left;
+}
+
+#vt1 > div > div > div:nth-child(2) > form:nth-child(2) > fieldset > fieldset:nth-of-type(3) {
+    display: block;
+}
+
+#vt1 > div > div > div:nth-child(2) > form:nth-child(2) > fieldset fieldset {
+    border: 0;
+}
+
+#vt1 > div > div > div:nth-child(2) > form:nth-child(2) > fieldset > label {
+    font-weight: bold;
+}
+
+#vt1 > div > div > div:nth-child(2) > form:nth-child(2) > fieldset fieldset legend {
+    font-weight: bold;
+}
+
+fieldset > label > input {
+    margin-bottom: 5px;
+    margin-top: 5px;
+    float: right;
+    clear: both;
+}
+
+#vt1 > div > div > div:nth-child(3) {
+    float: left;
+    width: 15%;
+    border-style: solid;
+    border-width: 1px;
+    padding: 1em;
+    margin: 0.5em;
+    margin-right: 15em;
+}
+
+#vt1 > div > div > div:nth-child(3) span {
+    float: right;
+}
+

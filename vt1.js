@@ -299,6 +299,61 @@ function tarkistaJasenet(jasenet) {
   * @return {Object} joukkue
   */
 function laskeAika(joukkue) {
+    let aloitusAika = "00:00:00";
+    let lopetusAika = "00:00:00";
+    let lahtoTaulukko = [];
+    let maaliTaulukko = [];
+    for (let rastileimaus of joukkue.rastileimaukset) {
+        if (rastileimaus.length == 0 | typeof(rastileimaus.rasti) == "undefined") {
+            //
+        } else if (rastileimaus.rasti.koodi == "LAHTO") {
+            lahtoTaulukko.push(rastileimaus.aika);
+        } else if (rastileimaus.rasti.koodi == "MAALI") {
+            maaliTaulukko.push(rastileimaus.aika);
+        }
+
+        for (let i = 0; i < lahtoTaulukko.length; i++) {
+            if (i == 0) {
+                aloitusAika = lahtoTaulukko[i];
+            } else if (lahtoTaulukko[i] > aloitusAika) {
+                aloitusAika = lahtoTaulukko[i];
+            }
+            console.log("Aloitusaika :" + aloitusAika);
+        }
+
+        for (let i = 0; i < maaliTaulukko.length; i++) {
+            if (i == 0 && maaliTaulukko[i] > aloitusAika) {
+                lopetusAika = maaliTaulukko[i];
+            } else if (maaliTaulukko[i] < lopetusAika && maaliTaulukko[i] > aloitusAika) {
+                lopetusAika = maaliTaulukko[i];
+            }
+            console.log("Lopetusaika :" + lopetusAika);
+        }
+    }
+    let aika = new Date(lopetusAika) - new Date(aloitusAika);
+    let sekunnit = Math.floor(aika / 1000);
+    let tunnit = Math.floor(sekunnit / 3600);
+    sekunnit = sekunnit % 3600;
+    let minuutit = Math.floor(sekunnit / 60);
+    sekunnit = sekunnit % 60;
+    if (String(Math.abs(sekunnit)).charAt(0) == sekunnit) {
+        sekunnit = '0' + sekunnit;
+    }
+
+    if (String(Math.abs(minuutit)).charAt(0) == minuutit) {
+        minuutit = '0' + minuutit;
+    }
+
+    if (String(Math.abs(tunnit)).charAt(0) == tunnit) {
+        tunnit = '0' + tunnit;
+    }
+
+    if ((sekunnit == 0 && minuutit == 0 && tunnit == 0) | (isNaN(sekunnit) == true && isNaN(minuutit) == true && isNaN(tunnit) == true)) {
+        joukkue.aika = "";
+    } else {
+        joukkue.aika = tunnit + ":" + minuutit + ":" + sekunnit;
+    }
+    console.log(joukkue.aika);
     return joukkue;
 }
 
@@ -336,6 +391,14 @@ function jarjestaJoukkueet(data, mainsort="nimi", sortorder=[] ) {
         if (mainsort == "nimi" | mainsort == "aika") {
             let eka = a[mainsort].toUpperCase();
             let toka = b[mainsort].toUpperCase();
+            if (eka === "") {
+                return 1;
+            }
+
+            if (toka === "") {
+                return -1;
+            }
+
             if (eka < toka) {
                 return -1;
             }
